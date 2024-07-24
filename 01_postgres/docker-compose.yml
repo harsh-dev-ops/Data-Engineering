@@ -1,0 +1,13 @@
+services:
+  postgres:
+    image: postgres:15-alpine3.19
+    ports:
+    - "5430:5432"
+    env_file:
+      - .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    command: postgres -c 'max_connections=250'
+
+volumes:
+  pgdata:
