@@ -1,1 +1,5 @@
-SELECT datname FROM pg_database;
+CREATE DATABASE retail_db;
+
+CREATE USER retail_user WITH ENCRYPTED PASSWORD 'Retail123';
+
+GRANT ALL ON DATABASE retail_db TO retail_user;
