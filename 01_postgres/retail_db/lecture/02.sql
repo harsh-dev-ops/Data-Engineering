@@ -1,4 +1,3 @@
-
 SELECT 'COMPLETE' AS order_status, COUNT(*) AS total
 FROM public.orders
 WHERE order_status = 'COMPLETE'
@@ -30,3 +29,25 @@ ORDER BY 2 DESC;
 SELECT order_item_order_id, round(sum(order_item_subtotal)::numeric, 2) AS order_revenue FROM order_items
 GROUP BY 1
 ORDER BY 2;
+
+-- SQL Execution order
+-- FROM
+-- WHERE
+-- GROUP BY
+-- SELECT
+-- ORDER BY
+
+
+SELECT order_date, count(*) as total 
+FROM orders
+WHERE order_status IN ('COMPLETE', 'PENDING')
+GROUP BY 1
+ORDER BY 2 DESC;
+
+
+SELECT order_date, count(*) as total 
+FROM orders
+WHERE order_status IN ('COMPLETE', 'PENDING')
+GROUP BY 1
+	HAVING count(*) >= 130
+ORDER BY 2 DESC;
