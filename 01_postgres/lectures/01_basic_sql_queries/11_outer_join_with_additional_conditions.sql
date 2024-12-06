@@ -32,7 +32,7 @@ SELECT *
 FROM products AS p
 	LEFT OUTER JOIN order_details_v AS odv
 		ON p.product_id = odv.order_item_product_id
-			AND to_char(odv.order_date, 'yyyy-MM') = '2014-01'
-WHERE odv.order_item_product_id is NULL;
+			AND to_char(odv.order_date::TIMESTAMP, 'yyyy-MM') = '2014-01'
+	AND odv.order_item_product_id is NULL;
 
 	
