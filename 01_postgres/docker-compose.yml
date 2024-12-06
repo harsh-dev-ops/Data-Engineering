@@ -8,6 +8,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     command: postgres -c 'max_connections=250'
+    restart: always
 
 volumes:
   pgdata:
