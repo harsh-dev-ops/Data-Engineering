@@ -14,11 +14,14 @@ ORDER BY order_date;
 
 
 -- daily product revenue
+DROP TABLE daily_product_revenue;
+
 CREATE TABLE daily_product_revenue
 AS
 SELECT o.order_id,
 		oi.order_item_product_id,
-		round(sum(oi.order_item_subtotal)::numeric, 2) AS order_revenue
+		round(sum(oi.order_item_subtotal)::numeric, 2) AS order_revenue,
+		o.order_date
 FROM orders AS o
 	JOIN order_items AS oi
 		ON o.order_id = oi.order_item_order_id
