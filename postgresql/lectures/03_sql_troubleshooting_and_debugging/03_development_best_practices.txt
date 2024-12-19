@@ -1,0 +1,12 @@
+Development Best Practices
+1. Understand requirements and design
+2. Develop the queries based on the design
+3. Unit Testing and Functionality Testing: 
+    Evaluate result against the requirements
+    (identify bugs if any)
+4. Troubleshoot the issues
+    a. Run queries on underlying tables
+    b. Make sure the conditions have relevant logic or 
+        right logic
+    c. Check for right join conditions
+5. Come up with final solution
