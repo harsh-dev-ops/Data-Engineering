@@ -142,6 +142,7 @@ ORDER BY  4 DESC, c.customer_id ASC;
 -- * Output should contain all the fields from `categories` along with the revenue as `category_revenue`.
 -- * Consider only `COMPLETE` and `CLOSED` orders
 
+
 SELECT count(DISTINCT p.product_category_id)
 FROM products AS p
     JOIN order_items AS oi
@@ -150,6 +151,7 @@ FROM products AS p
         ON o.order_id = oi.order_item_order_id
 WHERE o.order_status IN ('COMPLETE', 'CLOSED')
     AND to_char(o.order_date, 'yyyy-MM') = '2014-01';
+
 
 SELECT c.*
 FROM categories AS c
@@ -162,6 +164,7 @@ FROM categories AS c
 		AND to_char(o.order_date, 'yyyy-MM') = '2014-01'
 			AND o.order_status IN ('COMPLETE', 'CLOSED')
 GROUP BY 1, 2;
+
 
 SELECT c.*,
 		coalesce(round(sum(oi.order_item_subtotal)::numeric, 2),0) AS category_revenue
@@ -183,6 +186,7 @@ ORDER BY 4 DESC;
 -- * Tables - `departments`, `categories`, `products`
 -- * Data should be sorted in ascending order by `department_id`
 -- * Output should contain all the fields from `departments` and the product count as `product_count`
+
 SELECT * FROM departments;
 
 SELECT d.*,
