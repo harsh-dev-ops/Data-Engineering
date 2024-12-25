@@ -22,13 +22,13 @@ SELECT count(*) FROM customers;
 SELECT c.customer_id, 
 		c.customer_fname, 
 		c.customer_lname, 
-		count(o.order_id) AS customer_order_count
+		count(*) AS customer_order_count
 FROM orders AS o
 	JOIN customers AS c
 		ON o.order_customer_id = c.customer_id
 WHERE to_char(o.order_date::timestamp, 'yyyy-MM') = '2014-01'
-GROUP BY 1
-ORDER BY 4 DESC;
+GROUP BY 1, 2, 3
+ORDER BY 4 DESC, 1;
 
 
 -- ### Exercise 2 - Dormant Customers
@@ -40,12 +40,11 @@ ORDER BY 4 DESC;
 -- * Output should contain all the fields from `customers`
 -- * Make sure to run below provided validation queries and validate the output.
 
-SELECT c.*
-FROM orders AS o
-	RIGHT OUTER JOIN customers AS c
-		ON o.order_customer_id = c.customer_id
-WHERE to_char(o.order_date::timestamp, 'yyyy-MM') NOT IN ('2014-01')
-ORDER BY 1 ASC;
+-- Get the difference
+-- Get the count using solution query, both the difference and this count should match
+
+-- * Hint: You can use `NOT IN` or `NOT EXISTS` or `OUTER JOIN` to solve this problem.
+
 
 SELECT count(DISTINCT order_customer_id)
 FROM orders
@@ -54,10 +53,63 @@ WHERE to_char(order_date, 'yyyy-MM') = '2014-01';
 SELECT count(*)
 FROM customers;
 
--- Get the difference
--- Get the count using solution query, both the difference and this count should match
 
--- * Hint: You can use `NOT IN` or `NOT EXISTS` or `OUTER JOIN` to solve this problem.
+SELECT 12435 - 4696;
+
+
+-- NOT IN
+SELECT count(*)
+FROM customers AS c
+	WHERE c.customer_id NOT IN (
+		SELECT o.order_customer_id
+		FROM orders AS o
+			WHERE o.order_customer_id = c.customer_id
+				AND to_char(o.order_date::timestamp, 'yyyy-MM') = '2014-01'
+);
+
+SELECT c.*
+FROM customers AS c
+	WHERE c.customer_id NOT IN (
+		SELECT o.order_customer_id
+		FROM orders AS o
+			WHERE o.order_customer_id = c.customer_id
+				AND to_char(o.order_date::timestamp, 'yyyy-MM') = '2014-01'
+)
+ORDER BY 1;
+
+
+-- NOT EXISTS
+SELECT count(*)
+FROM customers AS c
+	WHERE NOT EXISTS (
+		SELECT o.order_customer_id
+		FROM orders AS o
+			WHERE o.order_customer_id = c.customer_id
+				AND to_char(o.order_date::timestamp, 'yyyy-MM') = '2014-01'
+);
+
+SELECT c.*
+FROM customers AS c
+	WHERE NOT EXISTS (
+		SELECT o.order_customer_id
+		FROM orders AS o
+			WHERE o.order_customer_id = c.customer_id
+				AND to_char(o.order_date::timestamp, 'yyyy-MM') = '2014-01'
+)
+ORDER BY 1;
+
+
+
+-- LEFT OUTER JOIN
+SELECT c.*
+FROM orders AS o
+	RIGHT OUTER JOIN customers AS c
+		ON o.order_customer_id = c.customer_id
+		AND to_char(o.order_date::timestamp, 'yyyy-MM') = ('2014-01')
+WHERE o.order_customer_id is NULL
+ORDER BY 1 ASC;
+
+
 
 -- ### Exercise 3 - Revenue Per Customer
 
@@ -89,6 +141,28 @@ ORDER BY  4 DESC, c.customer_id ASC;
 -- * Data should be sorted in ascending order by `category_id`.
 -- * Output should contain all the fields from `categories` along with the revenue as `category_revenue`.
 -- * Consider only `COMPLETE` and `CLOSED` orders
+
+SELECT count(DISTINCT p.product_category_id)
+FROM products AS p
+    JOIN order_items AS oi
+        ON p.product_id = oi.order_item_product_id
+    JOIN orders AS o
+        ON o.order_id = oi.order_item_order_id
+WHERE o.order_status IN ('COMPLETE', 'CLOSED')
+    AND to_char(o.order_date, 'yyyy-MM') = '2014-01';
+
+SELECT c.*
+FROM categories AS c
+	JOIN products AS p
+		ON c.category_id = p.product_category_id
+	JOIN order_items AS oi
+		ON oi.order_item_product_id = p.product_id
+	JOIN orders AS o
+		ON o.order_id = oi.order_item_order_id
+		AND to_char(o.order_date, 'yyyy-MM') = '2014-01'
+			AND o.order_status IN ('COMPLETE', 'CLOSED')
+GROUP BY 1, 2;
+
 SELECT c.*,
 		coalesce(round(sum(oi.order_item_subtotal)::numeric, 2),0) AS category_revenue
 FROM categories AS c
@@ -98,7 +172,7 @@ FROM categories AS c
 		ON oi.order_item_product_id = p.product_id
 	JOIN orders AS o
 		ON o.order_id = oi.order_item_order_id
-WHERE to_char(o.order_date, 'yyyy-MM') = '2014-01'
+			AND to_char(o.order_date, 'yyyy-MM') = '2014-01'
 			AND o.order_status IN ('COMPLETE', 'CLOSED')
 GROUP BY 1, 2, 3
 ORDER BY 4 DESC;
